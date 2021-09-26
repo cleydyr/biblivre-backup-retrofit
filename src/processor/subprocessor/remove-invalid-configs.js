@@ -1,10 +1,9 @@
 import { lstatSync, createReadStream, createWriteStream, readdirSync } from 'fs';
 import { createInterface } from 'readline';
-import { mkdtempSync, copyFileSync } from 'fs';
 import { copySync } from 'fs-extra';
-import { tmpdir } from 'os';
-import { join, sep as pathSeparator } from 'path';
-import { APP_PREFIX } from '../../constants';
+import { join } from 'path';
+import {destinationPath as getDestinationPath} from '../../util/destinationPath';
+import makeTempDirectory from '../../util/makeTempDirectory';
 
 const acceptedConfigs = [
     'search_path',
@@ -61,16 +60,8 @@ function _isLineToBeRemoved(line) {
     return !acceptedConfigs.includes(config);
 }
 
-function _getDestinationPath(path, dest) {
-    const pathParts = path.split(pathSeparator);
-    
-    const fileName = pathParts[pathParts.length - 1];
-
-    return join(dest, fileName)
-}
-
 function _processFileOfInterest(path, dest) {
-    const destinationPath = _getDestinationPath(path, dest);
+    const destinationPath = getDestinationPath(path, dest);
 
     const destinationFile = createWriteStream(destinationPath);
 
@@ -96,14 +87,14 @@ function _processFileOfInterest(path, dest) {
 export const rank = 9.1;
 
 export async function process(paths) {
-    const tmpDir = mkdtempSync(join(tmpdir(), APP_PREFIX));
+    const tmpDir = makeTempDirectory();
 
     const resolvedPaths = await paths;
 
     resolvedPaths
         .filter(path => !_isFileOfInterest(path))
         .forEach(path => {
-            copySync(path, _getDestinationPath(path, tmpDir));
+            copySync(path, getDestinationPath(path, tmpDir));
         });
 
     await Promise.all(resolvedPaths
@@ -113,4 +104,4 @@ export async function process(paths) {
     return readdirSync(tmpDir).map(fileName => join(tmpDir, fileName));
 }
 
-export const name = 'Processador PostgreSQL 9.2';
+export const name = 'Remover configurações inválidas para o PostgreSQL 9.1';

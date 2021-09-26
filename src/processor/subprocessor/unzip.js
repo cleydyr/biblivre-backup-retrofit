@@ -1,13 +1,12 @@
-import { mkdtempSync, readdirSync } from 'fs';
+import { readdirSync } from 'fs';
 
-import { tmpdir } from 'os';
 import { join } from 'path';
 import extract from 'extract-zip';
-import { APP_PREFIX } from '../../constants';
+import makeTempDirectory from '../../util/makeTempDirectory';
 
 
 export async function process(paths) {
-  const tmpDir = mkdtempSync(join(tmpdir(), APP_PREFIX));
+  const tmpDir = makeTempDirectory();
   
   await extract(paths[0], { dir: tmpDir });
   
