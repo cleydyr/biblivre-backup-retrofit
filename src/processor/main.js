@@ -8,13 +8,13 @@ async function process(path, statusCallback) {
         .reduce(async (acc, cur, index, array) => {
             console.log(cur.name);
 
-            const paths = await cur.process(acc);
-
             const data = {
                 progress: 100*(index + 1)/array.length,
                 phase: cur.name,
                 fileName: path,
             };
+
+            const paths = await cur.process(acc);
 
             statusCallback(data);
 

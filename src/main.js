@@ -59,11 +59,7 @@ ipcMain.on(START_PROCESS, async (event, path) => {
     event.reply(UPDATE_PROCESS_STATUS, status);
   })
 
-  console.log(`backupFile no main: ${backupFile}`);
-
   const destination = destinationPath(backupFile, homedir());
-
-  console.log(destination);
 
   copySync(backupFile, destination);
 

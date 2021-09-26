@@ -36,7 +36,11 @@ export async function process(paths) {
 
     archive.finalize();
 
-    return [backupPath];
+    return new Promise((resolve) => {
+        output.on('close', () => {
+            resolve([backupPath]);
+        });
+    });
 }
 
 export const name = 'Compressor';

@@ -17,8 +17,8 @@ api.receive(PROCESS_STARTED, (fileName) => {
   ReactDOM.render(<Started fileName={fileName}/>, document.getElementById('container'));
 })
 
-api.receive(PROCESS_FINISHED, () => {
-  //render success screen
+api.receive(PROCESS_FINISHED, (data) => {
+  ReactDOM.render(<><h3>Sucesso!</h3><p>Arquivo salvo em {data}</p></>, document.getElementById('container'));
 })
 
 api.receive(UPDATE_PROCESS_STATUS, (data) => {
