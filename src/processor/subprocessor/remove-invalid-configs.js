@@ -1,11 +1,10 @@
 import { lstatSync, createReadStream, createWriteStream, readdirSync } from 'fs';
 import { createInterface } from 'readline';
-import { mkdtempSync } from 'fs';
-
+import { mkdtempSync, copyFileSync } from 'fs';
+import { copySync } from 'fs-extra';
 import { tmpdir } from 'os';
 import { join, sep as pathSeparator } from 'path';
-
-const appPrefix = 'biblivre-backup-retrofitter';
+import { APP_PREFIX } from '../../constants';
 
 const acceptedConfigs = [
     'search_path',
@@ -39,7 +38,7 @@ const acceptedConfigs = [
 ];
 
 function _isFileOfInterest(path) {
-    if (!lstatSync(path).isFile()) {
+    if (lstatSync(path).isDirectory()) {
         return false;
     }
 
@@ -62,12 +61,16 @@ function _isLineToBeRemoved(line) {
     return !acceptedConfigs.includes(config);
 }
 
-function _processFileOfInterest(path, dest) {
+function _getDestinationPath(path, dest) {
     const pathParts = path.split(pathSeparator);
     
     const fileName = pathParts[pathParts.length - 1];
 
-    const destinationPath = join(dest, fileName)
+    return join(dest, fileName)
+}
+
+function _processFileOfInterest(path, dest) {
+    const destinationPath = _getDestinationPath(path, dest);
 
     const destinationFile = createWriteStream(destinationPath);
 
@@ -82,19 +85,30 @@ function _processFileOfInterest(path, dest) {
         }
     });
 
-    readInterface.on('close', () => destinationFile.close());
+    return new Promise((resolve) => {
+        readInterface.on('close', () => {
+            destinationFile.close();
+            resolve();
+        });
+    });
 }
 
 export const rank = 9.1;
 
 export async function process(paths) {
-    const tmpDir = mkdtempSync(join(tmpdir(), appPrefix));
+    const tmpDir = mkdtempSync(join(tmpdir(), APP_PREFIX));
 
     const resolvedPaths = await paths;
 
     resolvedPaths
+        .filter(path => !_isFileOfInterest(path))
+        .forEach(path => {
+            copySync(path, _getDestinationPath(path, tmpDir));
+        });
+
+    await Promise.all(resolvedPaths
         .filter(_isFileOfInterest)
-        .forEach(path => _processFileOfInterest(path, tmpDir));
+        .map(path => _processFileOfInterest(path, tmpDir)));
 
     return readdirSync(tmpDir).map(fileName => join(tmpDir, fileName));
 }
