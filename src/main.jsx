@@ -2,6 +2,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { START_PROCESS } from './constants.js';
 import MainForm from './ui/MainForm.jsx';
+import Started from './ui/Started.jsx';
+import Progress from './ui/Progress.jsx';
 
 const api = window.api;
 
@@ -11,16 +13,16 @@ const {
   UPDATE_PROCESS_STATUS,
 } = api.events;
 
-api.receive(PROCESS_STARTED, (a, b) => {
-  //render loading screen
+api.receive(PROCESS_STARTED, (fileName) => {
+  ReactDOM.render(<Started fileName={fileName}/>, document.getElementById('container'));
 })
 
 api.receive(PROCESS_FINISHED, () => {
   //render success screen
 })
 
-api.receive(UPDATE_PROCESS_STATUS, (event, data) => {
-  //progress screen
+api.receive(UPDATE_PROCESS_STATUS, (data) => {
+  ReactDOM.render(<Progress data={data}/>, document.getElementById('container'));
 })
 
 function handleSubmit(file) {

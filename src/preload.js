@@ -8,8 +8,6 @@ const PROCESS_STARTED = 'process-started';
 const UPDATE_PROCESS_STATUS = 'update-process-status';
 const PROCESS_FINISHED = 'process-finished';
 
-console.log(__dirname);
-
 contextBridge.exposeInMainWorld(
     "api", {
         events: {

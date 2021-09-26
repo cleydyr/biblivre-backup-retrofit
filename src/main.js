@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain} = require('electron');
 const path = require('path');
-const { START_PROCESS, PROCESS_STARTED } = require('./constants');
+const { START_PROCESS, PROCESS_STARTED, UPDATE_PROCESS_STATUS } = require('./constants');
+const mainProcessor = require('./processor/main');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -20,6 +21,8 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  mainWindow.webContents.openDevTools()
 };
 
 // This method will be called when Electron has finished
@@ -44,8 +47,12 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.on(START_PROCESS, (event, fileName) => {
-  event.reply(PROCESS_STARTED);
+ipcMain.on(START_PROCESS, (event, path) => {
+  event.reply(PROCESS_STARTED, path);
+
+  mainProcessor.process(path, (status) => {
+    event.reply(UPDATE_PROCESS_STATUS, status);
+  })
 });
 
 
