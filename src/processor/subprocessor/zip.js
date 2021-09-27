@@ -1,24 +1,29 @@
-import { createWriteStream, lstatSync, mkdtempSync, readdirSync } from 'fs';
-import { join, sep as pathSeparator } from 'path';
+import { createWriteStream} from 'fs';
+import { sep as pathSeparator } from 'path';
 import archiverFn from 'archiver';
 import makeTempDirectory from '../../util/makeTempDirectory';
+import getFolderSize from 'get-folder-size';
 
-const archive = archiverFn('zip', {
-    zlib: {
-        level: 1
-    }
-});
+export async function process(paths, statusCallback) {
+    const archive = archiverFn('zip', {
+        zlib: {
+            level: 1
+        }
+    });
 
-function _isFolder(path) {
-    return lstatSync(path).isDirectory();
-}
-
-export async function process(paths) {
     const resolvedPath = (await paths)[0];
 
     const lastIndexOfPathSeparator = resolvedPath.lastIndexOf(pathSeparator);
 
     const folderPath = resolvedPath.substring(0, lastIndexOfPathSeparator);
+
+    const {size: folderSize} = await getFolderSize(folderPath);
+
+    archive.on('progress', function (progress) {
+        const percent = progress.fs.processedBytes / folderSize * 100;
+
+        statusCallback(percent);
+    });
 
     const tmpDir = makeTempDirectory();
 
@@ -29,10 +34,6 @@ export async function process(paths) {
     archive.pipe(output);
 
     archive.directory(folderPath, false);
-
-    readdirSync(folderPath)
-        .filter(fileName => _isFolder(join(folderPath, fileName)))
-        .forEach(folderName => archive.directory(join(folderPath, folderName), folderName));
 
     archive.finalize();
 

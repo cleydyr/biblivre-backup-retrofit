@@ -2752,6 +2752,13 @@ get-folder-size@^2.0.1:
     gar "^1.0.4"
     tiny-each-async "2.0.3"
 
+get-folder-size@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/get-folder-size/-/get-folder-size-3.1.0.tgz#96d39f7e1a0b2e30d13958e05373ebfa32bdfaa4"
+  integrity sha512-/I7q+x1HCd22IXP4+kp2Wkz8+au7VfNwNyMfM4Z0gwaTMs+dJ1ShXUWDGSWXi+rDU59MI/j7NBP7+kd7zejnPw==
+  dependencies:
+    gar "^1.0.4"
+
 get-installed-path@^2.0.3:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/get-installed-path/-/get-installed-path-2.1.1.tgz#a1f33dc6b8af542c9331084e8edbe37fe2634152"
