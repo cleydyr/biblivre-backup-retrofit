@@ -5,8 +5,7 @@ const mainProcessor = require('./processor/main');
 const { homedir } = require('os');
 const {destinationPath} = require('./util/destinationPath');
 const { copySync } = require('fs-extra');
-
-console.log(destinationPath);
+const {download} = require('electron-dl');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -61,7 +60,7 @@ ipcMain.on(START_PROCESS, async (event, path) => {
 
   const destination = destinationPath(backupFile, homedir());
 
-  copySync(backupFile, destination);
+  event.sender.downloadURL(`file://${backupFile}`);
 
   event.reply(PROCESS_FINISHED, destination);
 });

@@ -5,7 +5,7 @@ import makeTempDirectory from '../../util/makeTempDirectory';
 
 const archive = archiverFn('zip', {
     zlib: {
-        level: 9
+        level: 1
     }
 });
 
