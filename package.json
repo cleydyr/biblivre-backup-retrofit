@@ -1,8 +1,8 @@
 {
-  "name": "my-new-app",
-  "productName": "my-new-app",
+  "name": "biblivre-backup-retrofit",
+  "productName": "Biblivre Backup Retrofitter",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "An utility app to easily adapt Biblivre 5 backup files taken from different versions of PostgreSQL to version 9.1.",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -11,8 +11,8 @@
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
   },
-  "keywords": [],
-  "author": "thecleydyr",
+  "keywords": ["biblivre"],
+  "author": "Cleydyr Albuquerque",
   "license": "MIT",
   "config": {
     "forge": {
@@ -21,7 +21,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "my_new_app"
+            "name": "biblivre-backup-retrofit"
           }
         },
         {
