@@ -1,11 +1,9 @@
-const { app, BrowserWindow, ipcMain} = require('electron');
-const path = require('path');
-const { START_PROCESS, PROCESS_STARTED, UPDATE_PROCESS_STATUS, PROCESS_FINISHED } = require('./constants');
-const mainProcessor = require('./processor/main');
-const { homedir } = require('os');
-const {destinationPath} = require('./util/destinationPath');
-const { copySync } = require('fs-extra');
-const {download} = require('electron-dl');
+import { app, BrowserWindow, ipcMain } from 'electron';
+import { join } from 'path';
+import { START_PROCESS, PROCESS_STARTED, UPDATE_PROCESS_STATUS, PROCESS_FINISHED } from './constants';
+import { process as _process } from './processor/main';
+import { homedir } from 'os';
+import { destinationPath } from './util/destinationPath';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -19,7 +17,7 @@ const createWindow = () => {
     height: 600,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: join(__dirname, 'preload.js'),
     },
   });
 
@@ -52,7 +50,7 @@ app.on('activate', () => {
 ipcMain.on(START_PROCESS, async (event, path) => {
   event.reply(PROCESS_STARTED, path);
 
-  const backupFile = await mainProcessor.process(path, (status) => {
+  const backupFile = await _process(path, (status) => {
     event.reply(UPDATE_PROCESS_STATUS, status);
   })
 
