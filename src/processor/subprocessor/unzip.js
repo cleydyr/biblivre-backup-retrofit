@@ -1,16 +1,13 @@
-import { readdirSync } from 'fs';
-
-import { join } from 'path';
 import extract from 'extract-zip';
 import makeTempDirectory from '../../util/makeTempDirectory';
 
 
-export async function process(paths) {
+export async function process(path) {
   const tmpDir = makeTempDirectory();
   
-  await extract(paths[0], { dir: tmpDir });
+  await extract(path, { dir: tmpDir });
   
-  return readdirSync(tmpDir).map(fileName => join(tmpDir, fileName));
+  return tmpDir;
 }
 
 export const rank = Number.MIN_VALUE;

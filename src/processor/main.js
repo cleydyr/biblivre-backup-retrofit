@@ -16,14 +16,12 @@ async function process(path, statusCallback) {
 
             statusCallback(data);
 
-            const paths = await cur.process(acc, (percent) => statusCallback({
+            return await cur.process(acc, (percent) => statusCallback({
                 progress: 100*index/array.length + percent/array.length,
                 phase: `${cur.name} (${index + 1} de ${array.length})`,
                 fileName: path,
             }));
-
-            return paths;
-        }, [path]);
+        }, path);
 }
 
 module.exports = {process};

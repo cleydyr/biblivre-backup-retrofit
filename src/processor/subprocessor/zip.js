@@ -1,21 +1,16 @@
-import { createWriteStream} from 'fs';
-import { sep as pathSeparator } from 'path';
+import { createWriteStream, readdirSync} from 'fs';
 import archiverFn from 'archiver';
 import makeTempDirectory from '../../util/makeTempDirectory';
 import getFolderSize from 'get-folder-size';
 
-export async function process(paths, statusCallback) {
+export async function process(path, statusCallback) {
     const archive = archiverFn('zip', {
         zlib: {
             level: 1
         }
     });
 
-    const resolvedPath = (await paths)[0];
-
-    const lastIndexOfPathSeparator = resolvedPath.lastIndexOf(pathSeparator);
-
-    const folderPath = resolvedPath.substring(0, lastIndexOfPathSeparator);
+    const folderPath = await path;
 
     const {size: folderSize} = await getFolderSize(folderPath);
 
@@ -27,7 +22,9 @@ export async function process(paths, statusCallback) {
 
     const tmpDir = makeTempDirectory();
 
-    const backupPath = tmpDir + '/backup.b4bz';
+    const versionNumber = readdirSync(folderPath).some(name => name.includes(".b5b")) ? 5 : 4;
+
+    const backupPath = tmpDir + `/backup.b${versionNumber}bz`;
 
     const output = createWriteStream(backupPath);
 
@@ -39,7 +36,7 @@ export async function process(paths, statusCallback) {
 
     return new Promise((resolve) => {
         output.on('close', () => {
-            resolve([backupPath]);
+            resolve(backupPath);
         });
     });
 }

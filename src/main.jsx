@@ -14,16 +14,18 @@ const {
   UPDATE_PROCESS_STATUS,
 } = api.events;
 
+const container = document.getElementById('container');
+
 api.receive(PROCESS_STARTED, (fileName) => {
-  ReactDOM.render(<Started fileName={fileName}/>, document.getElementById('container'));
+  ReactDOM.render(<React.StrictMode><Started fileName={fileName}/></React.StrictMode>, container);
 });
 
 api.receive(PROCESS_FINISHED, (data) => {
-  ReactDOM.render(<Success data={data}/>, document.getElementById('container'));
+  ReactDOM.render(<React.StrictMode><Success data={data}/></React.StrictMode>, container);
 });
 
 api.receive(UPDATE_PROCESS_STATUS, (data) => {
-  ReactDOM.render(<Progress data={data}/>, document.getElementById('container'));
+  ReactDOM.render(<React.StrictMode><Progress data={data}/></React.StrictMode>, container);
 });
 
 function handleSubmit(file) {
@@ -31,7 +33,7 @@ function handleSubmit(file) {
 }
 
 function render() {
-  ReactDOM.render(<MainForm handleSubmit={handleSubmit} />, document.getElementById('container'));
+  ReactDOM.render(<React.StrictMode><MainForm handleSubmit={handleSubmit} /></React.StrictMode>, container);
 }
 
 render();

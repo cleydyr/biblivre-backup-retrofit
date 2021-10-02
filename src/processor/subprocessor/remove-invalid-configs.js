@@ -86,22 +86,28 @@ function _processFileOfInterest(path, dest) {
 
 export const rank = 9.1;
 
-export async function process(paths) {
+export async function process(path) {
     const tmpDir = makeTempDirectory();
 
-    const resolvedPaths = await paths;
+    const resolvedPath = await path;
 
-    resolvedPaths
+    const fileNames = readdirSync(resolvedPath);
+
+    const sourceFiles = fileNames.map(fileName => join(resolvedPath, fileName));
+
+    sourceFiles
         .filter(path => !_isFileOfInterest(path))
         .forEach(path => {
             copySync(path, getDestinationPath(path, tmpDir));
         });
 
-    await Promise.all(resolvedPaths
-        .filter(_isFileOfInterest)
-        .map(path => _processFileOfInterest(path, tmpDir)));
+    await Promise.all(
+        sourceFiles
+            .filter(_isFileOfInterest)
+            .map(path => _processFileOfInterest(path, tmpDir))
+    );
 
-    return readdirSync(tmpDir).map(fileName => join(tmpDir, fileName));
+    return tmpDir;
 }
 
 export const name = 'Remover configurações inválidas para o PostgreSQL 9.1';

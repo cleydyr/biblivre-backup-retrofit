@@ -52,7 +52,7 @@ app.on('activate', () => {
 ipcMain.on(START_PROCESS, async (event, path) => {
   event.reply(PROCESS_STARTED, path);
 
-  const [backupFile] = await mainProcessor.process(path, (status) => {
+  const backupFile = await mainProcessor.process(path, (status) => {
     event.reply(UPDATE_PROCESS_STATUS, status);
   })
 
